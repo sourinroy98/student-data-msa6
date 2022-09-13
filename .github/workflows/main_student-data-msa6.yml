@@ -51,3 +51,29 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_ACA37DA018114907B123F35370FD68BD }}
           package: '*.jar'
+          
+          
+name: Build Docker image and push it ACR
+
+on: 
+  push:
+    branches: main
+  pull_request:
+    branches: main
+    
+  workflow_dispatch: 
+  
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v2
+      - uses: azure/docker-login@v1
+        with:
+          login-server: studentdata.azurecr.io
+          username: studentdata
+          password: CJsA+gOkkzOMd7Uj4k3cMh9jK4yrA61B
+          
+      - run: |
+          docker build . -t studentdata.azurecr.io/knowledgefacory:${{github.sha}}
+          docker push studentdata.azurecr.io/knowledgefacory:${{github.sha}}
